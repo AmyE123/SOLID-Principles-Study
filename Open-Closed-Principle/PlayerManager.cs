@@ -1,9 +1,14 @@
-﻿using UnityEngine;
+﻿using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
 
-public class PlayerManager : MonoBehaviour, ILevelEventListener
+public class PlayerManager : MonoBehaviour
 {
     public PlayerMovement[] players;
+    
 
+
+    // Start is called before the first frame update
     void Start()
     {
         players[0].isActive = true;
@@ -11,11 +16,12 @@ public class PlayerManager : MonoBehaviour, ILevelEventListener
 
         players[0].playerPos = new Vector3(-15, 1, 0.5f);
         players[1].playerPos = new Vector3(-15, -1, 0.5f);
+
     }
 
-    public void OnLevelFlip(bool isUprightRotation)
+    // Update is called once per frame
+    void Update()
     {
-        players[0].isActive = !isUprightRotation;
-        players[1].isActive = isUprightRotation;
+
     }
 }
