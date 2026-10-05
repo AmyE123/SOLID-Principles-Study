@@ -1,111 +1,76 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-using DG.Tweening;
 
+// This file has been edited, to have a single responsibility. Beforehand it did a lot more, but now it only checks the mouse input for tap or hold, and it knows nothing about sound, ui, players or the map, other components would subscribe to its events.
 public class HoldMouse : MonoBehaviour
 {
-    [Header("References")]
-    public UI_Ring ring_UI;
-    public PlayerMovement[] players;
-    public LevelManager levelManager;
-    public SoundFX soundFX;
-    public AudioClip[] gridSounds;
-    
-    
     [Header("Data Values")]
-    [Space(20)]
     public int numberSpaces = 0;
     public float clickDelay = 0.25f;
-    bool isCharging = false;
-    public bool upright = true;
     public float fullChargeDelay = 0.5f;
 
+    const float ClickDelayReset = 0.25f;
+    const int MaxSpaces = 5;
 
-    void start()
-    {
-
-    }
+    bool isCharging = false;
+    
+    public event Action<int> ChargeStepped;
+    
+    public event Action<int> ChargeReleased;
+    
+    public event Action Tapped;
 
     void Update()
     {
         ButtonPress();
-        
-        if(numberSpaces >= 5)
+
+        if (numberSpaces >= MaxSpaces)
         {
             numberSpaces = 1;
-
         }
     }
 
     void ButtonPress()
     {
-        if(Input.GetMouseButton(0))
+        if (Input.GetMouseButton(0))
         {
-            clickDelay -= Time.deltaTime; 
-            if(clickDelay <= 0)
+            clickDelay -= Time.deltaTime;
+            if (clickDelay <= 0)
             {
                 OnHoldDown();
             }
-
         }
-        else if(isCharging)
+        else if (isCharging)
         {
-            MoveSpaces();
+            Release();
         }
         else
         {
-            numberSpaces = 0;  
+            numberSpaces = 0;
         }
 
-        if(Input.GetMouseButtonDown(0))
+        if (Input.GetMouseButtonUp(0))
         {
-
-        }
-        if(Input.GetMouseButtonUp(0))
-        {
-            clickDelay = 0.25f;
-            if(numberSpaces <= 0)
+            clickDelay = ClickDelayReset;
+            if (numberSpaces <= 0)
             {
-                levelManager.FlipMap(upright);
-                upright = !upright;
+                Tapped?.Invoke();
             }
-        }
-    }
-
-    void MoveSpaces()
-    {
-        ring_UI.FadeOut_Fin();
-        isCharging = false;
-        clickDelay = 0.25f;
-        //player.PlayerMove(numberSpaces);
-        foreach(PlayerMovement p in players)
-        {
-            p.PlayerMove(numberSpaces);
         }
     }
 
     void OnHoldDown()
     {
-        ring_UI.ChargeRing();
         isCharging = true;
-        numberSpaces+= 1;
-        clickDelay = 0.25f;
-        soundFX.PlaySound(gridSounds[numberSpaces - 1]);
+        numberSpaces += 1;
+        clickDelay = ClickDelayReset;
+        ChargeStepped?.Invoke(numberSpaces);
     }
 
-    void OnClick()
+    void Release()
     {
-        if(Input.GetMouseButtonDown(0))
-        {
-
-        }
-        if(Input.GetMouseButtonUp(0))
-        {
-            clickDelay = 0.25f;
-        }
+        isCharging = false;
+        clickDelay = ClickDelayReset;
+        ChargeReleased?.Invoke(numberSpaces);
     }
-
 }
