@@ -4,6 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.ParticleSystemJobs;
 
+// Refactor PlayerMovement to use the interface it is now closed for modification
 public class PlayerMovement : MonoBehaviour
 {
     public Vector3 playerPos;
@@ -149,29 +150,10 @@ public class PlayerMovement : MonoBehaviour
     void OnTriggerEnter(Collider other)
     {
         Debug.Log("trigger");
-        if(other.tag == "enemy")
+        IPlayerInteractable interactable = other.GetComponent<IPlayerInteractable>();
+        if (interactable != null)
         {
-            isHit = true;
-            DOTween.Kill(transform);
-            soundFX.PlaySound(deathSound);
-            Debug.Log("death");
-            deathPos = playerPos;
-            var deathPosition = Instantiate(playerExplosion, player);
-            deathPosition.transform.SetParent(null);
-            speed = 0;
-            playerTransform();
-        }
-        else if(other.tag == "button")
-        {
-            button.LowerBlockage(); 
-            soundFX.PlaySound(buttonClick);
-        }
-        else if(other.tag == "block")
-        {
-            //playerPos -= Vector3.right; 
-            transform.DOLocalMove(blockArea1.position, speed);
-            //transform.position = endblock.position;
-            playerPos = blockArea1.position;
+            interactable.OnPlayerCollide(this);
         }
     }
 
