@@ -1,15 +1,14 @@
 using UnityEngine;
+using DG.Tweening;
 
 public class BlockCollider : MonoBehaviour, IPlayerInteractable
 {
     public Transform blockArea;
 
-    public void OnPlayerCollide(GameObject player)
+    public void OnPlayerCollide(PlayerMovement player)
     {
-        var blockable = player.GetComponent<IBlockable>();
-        if (blockable == null) return;
-
-        blockable.BlockAt(blockArea.position);
+        player.transform.DOLocalMove(blockArea.position, player.speed);
+        player.playerPos = blockArea.position;
         Debug.Log("Player blocked!");
     }
 }

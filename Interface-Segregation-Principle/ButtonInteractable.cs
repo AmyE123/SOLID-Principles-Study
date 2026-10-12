@@ -6,7 +6,7 @@ public class ButtonInteractable : MonoBehaviour, IPlayerInteractable
     public SoundFX soundFX;
     public AudioClip buttonClickSound;
 
-    public void OnPlayerCollide(GameObject player)
+    public void OnPlayerCollide(PlayerMovement player)
     {
         buttonCommand.LowerBlockage();
         soundFX.PlaySound(buttonClickSound);

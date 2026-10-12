@@ -4,7 +4,7 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.ParticleSystemJobs;
 
-public class PlayerMovement : MonoBehaviour, IBlockable, IKillable
+public class PlayerMovement : MonoBehaviour
 {
     public Vector3 playerPos;
     public float speed = 0.5f;
@@ -152,26 +152,8 @@ public class PlayerMovement : MonoBehaviour, IBlockable, IKillable
         IPlayerInteractable interactable = other.GetComponent<IPlayerInteractable>();
         if (interactable != null)
         {
-            interactable.OnPlayerCollide(gameObject);
+            interactable.OnPlayerCollide(this);
         }
-    }
-
-    public void BlockAt(Vector3 position)
-    {
-        transform.DOLocalMove(position, speed);
-        playerPos = position;
-    }
-
-    public void Kill(ParticleSystem explosion)
-    {
-        isHit = true;
-        DOTween.Kill(transform);
-
-        var deathPosition = Instantiate(explosion, player);
-        deathPosition.transform.SetParent(null);
-
-        speed = 0;
-        playerTransform();
     }
 
     void playerTransform()
