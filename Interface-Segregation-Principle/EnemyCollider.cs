@@ -1,5 +1,4 @@
 using UnityEngine;
-using DG.Tweening;
 
 public class EnemyCollider : MonoBehaviour, IPlayerInteractable
 {
@@ -7,17 +6,13 @@ public class EnemyCollider : MonoBehaviour, IPlayerInteractable
     public SoundFX soundFX;
     public AudioClip deathSound;
 
-    public void OnPlayerCollide(PlayerMovement player)
+    public void OnPlayerCollide(GameObject player)
     {
-        player.isHit = true;
-        DOTween.Kill(player.transform);
+        var killable = player.GetComponent<IKillable>();
+        if (killable == null) return;
+
         soundFX.PlaySound(deathSound);
         Debug.Log("Player hit enemy!");
-
-        var deathPosition = Instantiate(playerExplosion, player.player);
-        deathPosition.transform.SetParent(null);
-
-        player.speed = 0;
-        player.playerTransform();
+        killable.Kill(playerExplosion);
     }
 }
