@@ -4,7 +4,8 @@ using UnityEngine;
 using DG.Tweening;
 using UnityEngine.ParticleSystemJobs;
 
-public class PlayerMovement : MonoBehaviour
+// Refactor PlayerMovement to use the interface it is now closed for modification
+public class PlayerMovement : MonoBehaviour, IBlockable, IKillable
 {
     public Vector3 playerPos;
     public float speed = 0.5f;
@@ -152,8 +153,26 @@ public class PlayerMovement : MonoBehaviour
         IPlayerInteractable interactable = other.GetComponent<IPlayerInteractable>();
         if (interactable != null)
         {
-            interactable.OnPlayerCollide(this);
+            interactable.OnPlayerCollide(gameObject);
         }
+    }
+
+    public void BlockAt(Vector3 position)
+    {
+        transform.DOLocalMove(position, speed);
+        playerPos = position;
+    }
+
+    public void Kill(ParticleSystem explosion)
+    {
+        isHit = true;
+        DOTween.Kill(transform);
+
+        var deathPosition = Instantiate(explosion, player);
+        deathPosition.transform.SetParent(null);
+
+        speed = 0;
+        playerTransform();
     }
 
     void playerTransform()

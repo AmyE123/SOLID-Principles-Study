@@ -1,7 +1,8 @@
 using UnityEngine;
 
-// Create an interface that all collision types can implement
+// Implementers receive only the player's GameObject and ask it for the
+// narrow capabilities (IBlockable, IKillable, ...) they actually need.
 public interface IPlayerInteractable
 {
-    void OnPlayerCollide(PlayerMovement player);
+    void OnPlayerCollide(GameObject player);
 }
