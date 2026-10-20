@@ -1,10 +1,10 @@
-﻿using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 using DG.Tweening;
 
+// This file has been edited, and it now has the single responsibility of displaying the hold down charge ring at the cursor point. 
+// Should rename to UIRing.cs to fit other naming conventions
 public class UI_Ring : MonoBehaviour
 {
     [Header("References")]
@@ -13,7 +13,6 @@ public class UI_Ring : MonoBehaviour
     [Header("Data Values")]
     [Space(20)]
     float FillMultiplier = 0.25f;
-    
 
     [Header("UI References")]
     [Space(20)]
@@ -22,6 +21,18 @@ public class UI_Ring : MonoBehaviour
     public Image outerRing;
     public TextMeshProUGUI numberText;
 
+    void OnEnable()
+    {
+        holdManager.ChargeStepped += OnChargeStepped;
+        holdManager.ChargeReleased += OnChargeReleased;
+    }
+
+    void OnDisable()
+    {
+        holdManager.ChargeStepped -= OnChargeStepped;
+        holdManager.ChargeReleased -= OnChargeReleased;
+    }
+
     void Start()
     {
         fillRing.fillAmount = 0;
@@ -29,10 +40,18 @@ public class UI_Ring : MonoBehaviour
 
     void Update()
     {
-        var mousePos = Input.mousePosition;
-        circlePos.position = new Vector3(mousePos.x, mousePos.y, mousePos.z);
+        circlePos.position = Input.mousePosition;
         numberText.SetText(holdManager.numberSpaces.ToString());
-        
+    }
+
+    void OnChargeStepped(int step)
+    {
+        ChargeRing();
+    }
+
+    void OnChargeReleased(int spaces)
+    {
+        FadeOut_Fin();
     }
 
     public void FadeOut_Fin()
@@ -45,11 +64,9 @@ public class UI_Ring : MonoBehaviour
 
     public void ChargeRing()
     {
-        Debug.Log(holdManager.numberSpaces/4.0f);
         fillRing.DOFade(0.8f, 1);
         outerRing.DOFade(0.5f, 1);
         numberText.DOFade(1, 1);
         fillRing.fillAmount += FillMultiplier;
     }
-
 }
