@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class SoundFX : MonoBehaviour
+public class SoundFX : MonoBehaviour, ISoundPlayer
 {
     public AudioSource audioSource;
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using DG.Tweening;
 using UnityEngine.ParticleSystemJobs;
+using UnityEngine.Serialization;
 
 public class PlayerMovement : MonoBehaviour
 {
@@ -19,7 +20,8 @@ public class PlayerMovement : MonoBehaviour
     float respawnDelay = 0.2f;
     public ButtonCommand button;
 
-    public SoundFX soundFX;
+    [SerializeField] MonoBehaviour soundFXSource;
+    ISoundPlayer soundFX;
     public AudioClip buttonClick;
     public AudioClip deathSound;
 
@@ -27,6 +29,17 @@ public class PlayerMovement : MonoBehaviour
     public bool isHit;
 
 
+
+    void Awake()
+    {
+        soundFX = soundFXSource as ISoundPlayer;
+    }
+
+    // This allows a DI container to inject a different implementation.
+    public void Construct(ISoundPlayer soundPlayer)
+    {
+        soundFX = soundPlayer;
+    }
 
     void Start()
     {
